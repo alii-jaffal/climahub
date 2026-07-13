@@ -34,19 +34,63 @@ class WeatherRecord(Base):
         ),
     )
 
-    record_id = Column(Integer, primary_key=True, index=True)
-    location_query = Column(String(255), nullable=False)
-    resolved_location = Column(String(255), nullable=False, index=True)
-    latitude = Column(Float, nullable=False)
-    longitude = Column(Float, nullable=False)
-    timezone = Column(String(255), nullable=False)
-    start_date = Column(Date, nullable=False)
-    end_date = Column(Date, nullable=False)
-    notes = Column(Text, nullable=True)
-    weather_data = Column(JSONB, nullable=False)
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+    record_id = Column(
+        Integer,
+        primary_key=True,
     )
+
+    location_query = Column(
+        String(255),
+        nullable=False,
+    )
+
+    resolved_location = Column(
+        String(255),
+        nullable=False,
+        index=True,
+    )
+
+    latitude = Column(
+        Float,
+        nullable=False,
+    )
+
+    longitude = Column(
+        Float,
+        nullable=False,
+    )
+
+    timezone = Column(
+        String(255),
+        nullable=False,
+    )
+
+    start_date = Column(
+        Date,
+        nullable=False,
+    )
+
+    end_date = Column(
+        Date,
+        nullable=False,
+    )
+
+    notes = Column(
+        Text,
+        nullable=True,
+    )
+
+    weather_data = Column(
+        JSONB,
+        nullable=False,
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -59,6 +103,7 @@ class WeatherRecord(Base):
         back_populates="weather_record",
         cascade="all, delete-orphan",
         passive_deletes=True,
+        order_by="DailyWeather.weather_date",
     )
 
 
@@ -73,22 +118,66 @@ class DailyWeather(Base):
         ),
     )
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+    )
+
     weather_record_id = Column(
         Integer,
-        ForeignKey("weather_records.record_id", ondelete="CASCADE"),
+        ForeignKey(
+            "weather_records.record_id",
+            ondelete="CASCADE",
+        ),
         nullable=False,
         index=True,
     )
-    weather_date = Column(Date, nullable=False, index=True)
-    temperature_min = Column(Float, nullable=True)
-    temperature_max = Column(Float, nullable=True)
-    temperature_mean = Column(Float, nullable=True)
-    precipitation_sum = Column(Float, nullable=True)
-    wind_speed_max = Column(Float, nullable=True)
-    weather_code = Column(Integer, nullable=True)
-    sunrise = Column(DateTime(timezone=True), nullable=True)
-    sunset = Column(DateTime(timezone=True), nullable=True)
+
+    weather_date = Column(
+        Date,
+        nullable=False,
+        index=True,
+    )
+
+    temperature_min = Column(
+        Float,
+        nullable=True,
+    )
+
+    temperature_max = Column(
+        Float,
+        nullable=True,
+    )
+
+    temperature_mean = Column(
+        Float,
+        nullable=True,
+    )
+
+    precipitation_sum = Column(
+        Float,
+        nullable=True,
+    )
+
+    wind_speed_max = Column(
+        Float,
+        nullable=True,
+    )
+
+    weather_code = Column(
+        Integer,
+        nullable=True,
+    )
+
+    sunrise = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    sunset = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
 
     weather_record = relationship(
         "WeatherRecord",
