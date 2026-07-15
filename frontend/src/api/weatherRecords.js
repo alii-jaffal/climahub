@@ -5,6 +5,11 @@ export async function createWeatherRecord(data) {
   return response.data;
 }
 
+export async function createWeatherRecordFromCoordinates(data) {
+  const response = await apiClient.post("/api/weather-records/coordinates", data);
+  return response.data;
+}
+
 export async function getWeatherRecords(skip = 0, limit = 20) {
   const response = await apiClient.get("/api/weather-records", {
     params: { skip, limit },

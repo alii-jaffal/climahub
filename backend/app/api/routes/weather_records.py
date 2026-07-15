@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.dependencies import get_weather_record_service
 from app.schemas.weather_record import (
+    WeatherRecordCoordinatesCreate,
     WeatherRecordCreate,
     WeatherRecordListResponse,
     WeatherRecordResponse,
@@ -59,6 +60,41 @@ async def create_weather_record(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(exc),
         ) from exc
+    except InvalidWeatherDateRangeError as exc:
+        raise RequestValidationError(
+            [{"loc": ("body",), "msg": str(exc), "type": "value_error"}]
+        ) from exc
+    except ValidationError as exc:
+        raise RequestValidationError(exc.errors()) from exc
+    except httpx.TimeoutException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            detail="Open-Meteo request timed out",
+        ) from exc
+    except httpx.HTTPStatusError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Open-Meteo request failed",
+        ) from exc
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database operation failed",
+        ) from exc
+
+
+@router.post(
+    "/coordinates",
+    response_model=WeatherRecordResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses=WRITE_RECORD_RESPONSES,
+)
+async def create_weather_record_from_coordinates(
+    payload: WeatherRecordCoordinatesCreate,
+    service: Annotated[WeatherRecordService, Depends(get_weather_record_service)],
+) -> WeatherRecordResponse:
+    try:
+        return await service.create_record_from_coordinates(payload)
     except InvalidWeatherDateRangeError as exc:
         raise RequestValidationError(
             [{"loc": ("body",), "msg": str(exc), "type": "value_error"}]

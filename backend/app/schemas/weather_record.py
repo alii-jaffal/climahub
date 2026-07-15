@@ -34,6 +34,21 @@ class WeatherRecordCreate(BaseModel):
         return self
 
 
+class WeatherRecordCoordinatesCreate(BaseModel):
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+    start_date: date
+    end_date: date
+    notes: str | None = Field(default=None, max_length=2000)
+
+    @model_validator(mode="after")
+    def validate_date_range(self) -> Self:
+        if self.start_date > self.end_date:
+            raise ValueError("start_date must be less than or equal to end_date")
+
+        return self
+
+
 class WeatherRecordUpdate(BaseModel):
     location: str | None = None
     start_date: date | None = None

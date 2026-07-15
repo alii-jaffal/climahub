@@ -8,7 +8,11 @@ from app.database.repository import (
     WeatherRecordCreateData,
     WeatherRecordRepository,
 )
-from app.schemas.weather_record import WeatherRecordCreate, WeatherRecordUpdate
+from app.schemas.weather_record import (
+    WeatherRecordCoordinatesCreate,
+    WeatherRecordCreate,
+    WeatherRecordUpdate,
+)
 from app.services.forcast_weather_service import ForecastWeatherService
 from app.services.geocoding_service import GeocodingService
 from app.services.historical_weather_service import HistoricalWeatherService
@@ -79,7 +83,43 @@ class WeatherRecordService:
 
         return self.repository.create(
             record_data=self._build_record_data(
-                payload=payload,
+                location_query=payload.location,
+                start_date=payload.start_date,
+                end_date=payload.end_date,
+                notes=payload.notes,
+                resolved_location=resolved_location,
+                weather_data=weather_data,
+            ),
+            daily_weather_rows=daily_weather_rows,
+        )
+
+    async def create_record_from_coordinates(
+        self,
+        payload: WeatherRecordCoordinatesCreate,
+    ) -> WeatherRecord:
+        resolved_location = self._build_coordinate_location(
+            latitude=payload.latitude,
+            longitude=payload.longitude,
+        )
+        weather_data = await self._fetch_weather_data(
+            latitude=resolved_location.latitude,
+            longitude=resolved_location.longitude,
+            start_date=payload.start_date,
+            end_date=payload.end_date,
+            timezone=resolved_location.timezone,
+        )
+        resolved_location = self._apply_provider_timezone(
+            resolved_location,
+            weather_data,
+        )
+        daily_weather_rows = self._build_daily_weather_rows(weather_data)
+
+        return self.repository.create(
+            record_data=self._build_record_data(
+                location_query=resolved_location.location_query,
+                start_date=payload.start_date,
+                end_date=payload.end_date,
+                notes=payload.notes,
                 resolved_location=resolved_location,
                 weather_data=weather_data,
             ),
@@ -134,7 +174,11 @@ class WeatherRecordService:
                 updates={"notes": merged_payload.notes},
             )
 
-        resolved_location = await self._resolve_location(merged_payload.location)
+        if merged_payload.location == record.location_query:
+            resolved_location = self._build_resolved_location_from_record(record)
+        else:
+            resolved_location = await self._resolve_location(merged_payload.location)
+
         weather_data = await self._fetch_weather_data(
             latitude=resolved_location.latitude,
             longitude=resolved_location.longitude,
@@ -142,9 +186,16 @@ class WeatherRecordService:
             end_date=merged_payload.end_date,
             timezone=resolved_location.timezone,
         )
+        resolved_location = self._apply_provider_timezone(
+            resolved_location,
+            weather_data,
+        )
         daily_weather_rows = self._build_daily_weather_rows(weather_data)
         refreshed_parent_data = self._build_record_data(
-            payload=merged_payload,
+            location_query=merged_payload.location,
+            start_date=merged_payload.start_date,
+            end_date=merged_payload.end_date,
+            notes=merged_payload.notes,
             resolved_location=resolved_location,
             weather_data=weather_data,
         )
@@ -169,19 +220,22 @@ class WeatherRecordService:
     def _build_record_data(
         self,
         *,
-        payload: WeatherRecordCreate,
+        location_query: str,
+        start_date: date,
+        end_date: date,
+        notes: str | None,
         resolved_location: ResolvedLocation,
         weather_data: dict[str, Any],
     ) -> WeatherRecordCreateData:
         return {
-            "location_query": payload.location,
+            "location_query": location_query,
             "resolved_location": resolved_location.resolved_location,
             "latitude": resolved_location.latitude,
             "longitude": resolved_location.longitude,
             "timezone": resolved_location.timezone,
-            "start_date": payload.start_date,
-            "end_date": payload.end_date,
-            "notes": payload.notes,
+            "start_date": start_date,
+            "end_date": end_date,
+            "notes": notes,
             "weather_data": weather_data,
         }
 
@@ -242,6 +296,55 @@ class WeatherRecordService:
         ]
 
         return ", ".join(part for part in parts if part)
+
+    def _build_coordinate_location(
+        self,
+        *,
+        latitude: float,
+        longitude: float,
+    ) -> ResolvedLocation:
+        coordinate_query = self._format_coordinate_query(latitude, longitude)
+
+        return ResolvedLocation(
+            location_query=coordinate_query,
+            resolved_location=f"Current location ({coordinate_query})",
+            latitude=latitude,
+            longitude=longitude,
+            timezone="auto",
+        )
+
+    def _build_resolved_location_from_record(
+        self,
+        record: WeatherRecord,
+    ) -> ResolvedLocation:
+        return ResolvedLocation(
+            location_query=record.location_query,
+            resolved_location=record.resolved_location,
+            latitude=record.latitude,
+            longitude=record.longitude,
+            timezone=record.timezone,
+        )
+
+    def _apply_provider_timezone(
+        self,
+        resolved_location: ResolvedLocation,
+        weather_data: dict[str, Any],
+    ) -> ResolvedLocation:
+        provider_timezone = weather_data.get("timezone")
+
+        if not provider_timezone or provider_timezone == resolved_location.timezone:
+            return resolved_location
+
+        return ResolvedLocation(
+            location_query=resolved_location.location_query,
+            resolved_location=resolved_location.resolved_location,
+            latitude=resolved_location.latitude,
+            longitude=resolved_location.longitude,
+            timezone=str(provider_timezone),
+        )
+
+    def _format_coordinate_query(self, latitude: float, longitude: float) -> str:
+        return f"{latitude:.4f}, {longitude:.4f}"
 
     async def _fetch_weather_data(
         self,
