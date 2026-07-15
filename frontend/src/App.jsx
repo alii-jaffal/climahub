@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   createWeatherRecord,
@@ -84,26 +84,27 @@ function App() {
   const [recordActionLoading, setRecordActionLoading] = useState(false);
   const [recordActionError, setRecordActionError] = useState(null);
 
-  useEffect(() => {
-    void refreshRecords();
-  }, []);
-
-  async function refreshRecords(preferredRecordId = null, preferredRecord = null) {
+  const refreshRecords = useCallback(async (
+    preferredRecordId = null,
+    preferredRecord = null,
+  ) => {
     setRecordsLoading(true);
     setRecordsError(null);
 
     try {
       const response = await getWeatherRecords(0, 20);
       const nextRecords = response.records ?? [];
-      const selectedRecord =
-        preferredRecord ??
-        nextRecords.find((record) => record.record_id === preferredRecordId) ??
-        nextRecords.find((record) => record.record_id === weatherRecord?.record_id) ??
-        nextRecords[0] ??
-        null;
 
       setSavedRecords(nextRecords);
-      setWeatherRecord(selectedRecord);
+      setWeatherRecord((currentWeatherRecord) => (
+        preferredRecord ??
+        nextRecords.find((record) => record.record_id === preferredRecordId) ??
+        nextRecords.find(
+          (record) => record.record_id === currentWeatherRecord?.record_id,
+        ) ??
+        nextRecords[0] ??
+        null
+      ));
     } catch (requestError) {
       setRecordsError(
         getErrorState(requestError, "Could not load saved weather records."),
@@ -111,7 +112,11 @@ function App() {
     } finally {
       setRecordsLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    void refreshRecords();
+  }, [refreshRecords]);
 
   async function handleCreateRecord(data) {
     setLoading(true);
