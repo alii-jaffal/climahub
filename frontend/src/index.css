@@ -1,24 +1,22 @@
 :root {
-  --bg: #eff4f1;
-  --panel: rgba(255, 255, 255, 0.92);
-  --border: rgba(47, 72, 67, 0.14);
-  --border-soft: rgba(47, 72, 67, 0.09);
-  --text: #4b625d;
-  --text-strong: #17312b;
-  --text-muted: #60756f;
-  --accent: #1f7f65;
-  --pill-bg: #d8ede6;
+  --bg: #f4f6f5;
+  --panel: rgba(255, 255, 255, 0.98);
+  --border: rgba(39, 58, 52, 0.12);
+  --border-soft: rgba(39, 58, 52, 0.08);
+  --text: #52625d;
+  --text-strong: #173029;
+  --text-muted: #667872;
+  --accent: #176a56;
+  --pill-bg: #d7ebe4;
   --pill-text: #245645;
-  --shadow: 0 20px 45px rgba(25, 56, 49, 0.08);
+  --shadow: 0 10px 24px rgba(20, 39, 34, 0.06);
 
   font-family:
     "Segoe UI", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--text);
-  background:
-    radial-gradient(circle at top left, rgba(158, 214, 188, 0.38), transparent 34%),
-    linear-gradient(180deg, #f5faf7 0%, #edf4f0 100%);
+  background: linear-gradient(180deg, #f8faf9 0%, #f0f4f2 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -52,13 +50,12 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(2.4rem, 4vw, 4rem);
-  line-height: 1.05;
-  margin-bottom: 18px;
+  font-size: clamp(1.85rem, 2.6vw, 2.4rem);
+  line-height: 1.1;
 }
 
 h2 {
-  font-size: 1.2rem;
+  font-size: 1.08rem;
   line-height: 1.2;
 }
 

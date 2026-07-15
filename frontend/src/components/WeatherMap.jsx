@@ -28,54 +28,45 @@ function WeatherMap({ weatherRecord }) {
   };
 
   return (
-    <section className="overview-block">
-      <div className="section-header compact-header">
-        <div>
-          <span className="eyebrow">Map</span>
-          <h3 className="subheading">{weatherRecord.resolved_location}</h3>
-        </div>
-      </div>
-
-      <div className="map-frame">
-        <MapContainer
+    <div className="map-frame">
+      <MapContainer
+        center={center}
+        zoom={10}
+        scrollWheelZoom={false}
+        className="map-container"
+      >
+        <MapViewport center={center} />
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <CircleMarker
           center={center}
-          zoom={10}
-          scrollWheelZoom={false}
-          className="map-container"
+          radius={10}
+          pathOptions={{
+            color: "#176a56",
+            fillColor: "#176a56",
+            fillOpacity: 0.88,
+            weight: 2,
+          }}
         >
-          <MapViewport center={center} />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <CircleMarker
-            center={center}
-            radius={10}
-            pathOptions={{
-              color: "#1f7f65",
-              fillColor: "#2e9b7d",
-              fillOpacity: 0.88,
-              weight: 2,
-            }}
-          >
-            <Popup>
-              <div className="map-popup">
-                <strong>{weatherRecord.resolved_location}</strong>
-                <span>
-                  Current temperature:{" "}
-                  {currentWeather
-                    ? formatValue(
-                        currentWeather.temperature_2m,
-                        currentUnits.temperature_2m,
-                      )
-                    : "Unavailable for this saved range"}
-                </span>
-              </div>
-            </Popup>
-          </CircleMarker>
-        </MapContainer>
-      </div>
-    </section>
+          <Popup>
+            <div className="map-popup">
+              <strong>{weatherRecord.resolved_location}</strong>
+              <span>
+                Current temperature:{" "}
+                {currentWeather
+                  ? formatValue(
+                      currentWeather.temperature_2m,
+                      currentUnits.temperature_2m,
+                    )
+                  : "Unavailable for this saved range"}
+              </span>
+            </div>
+          </Popup>
+        </CircleMarker>
+      </MapContainer>
+    </div>
   );
 }
 

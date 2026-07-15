@@ -13,20 +13,23 @@ function WeatherRecordRow({ record, selected, onOpen, disabled = false }) {
       onClick={() => onOpen(record.record_id)}
       disabled={disabled}
     >
-      <div className="record-row-main">
-        <span className="record-weather-icon" aria-hidden="true">
-          {getWeatherIcon(previewCode)}
-        </span>
-        <div className="record-row-copy">
-          <strong>{record.resolved_location}</strong>
-          <span>{getWeatherDescription(previewCode)}</span>
+      <div className="record-row-head">
+        <div className="record-row-main">
+          <span className="record-weather-icon" aria-hidden="true">
+            {getWeatherIcon(previewCode)}
+          </span>
+          <div className="record-row-copy">
+            <strong>{record.resolved_location}</strong>
+            <span>{getWeatherDescription(previewCode)}</span>
+          </div>
         </div>
-      </div>
-      <div className="record-row-meta">
-        <span>
+        <span className="record-date-pill">
           {formatDate(record.start_date)} to {formatDate(record.end_date)}
         </span>
-        <span>Saved from "{record.location_query}"</span>
+      </div>
+      <div className="record-row-meta">
+        <span>{record.location_query}</span>
+        <span>{record.timezone}</span>
       </div>
     </button>
   );

@@ -120,8 +120,8 @@ function EditWeatherRecordForm({
     <section className="edit-panel">
       <div className="section-header">
         <div>
-          <span className="eyebrow">Selected record</span>
-          <h2>Edit saved request</h2>
+          <span className="eyebrow">Edit</span>
+          <h2>Record details</h2>
         </div>
         {loading ? (
           <div className="status-inline">

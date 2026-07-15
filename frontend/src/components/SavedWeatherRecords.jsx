@@ -22,8 +22,8 @@ function SavedWeatherRecords({
     <section className="surface">
       <div className="section-header">
         <div>
-          <span className="eyebrow">Saved records</span>
-          <h2>Open and manage stored requests</h2>
+          <span className="eyebrow">Library</span>
+          <h2>Saved records</h2>
         </div>
         <div className="section-actions">
           <a

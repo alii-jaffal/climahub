@@ -131,8 +131,8 @@ function WeatherSearchForm({
     <section className="surface form-surface">
       <div className="section-header">
         <div>
-          <span className="eyebrow">Weather search</span>
-          <h2>Create a saved weather record</h2>
+          <span className="eyebrow">Search</span>
+          <h2>New weather record</h2>
         </div>
         {isBusy ? (
           <div className="status-inline">

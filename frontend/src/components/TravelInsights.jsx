@@ -164,26 +164,20 @@ function TravelInsights({ weatherRecord }) {
   const insights = buildInsights(weatherRecord);
 
   return (
-    <section className="overview-block">
-      <div className="section-header compact-header">
-        <div>
-          <span className="eyebrow">Travel insights</span>
-          <h3 className="subheading">Useful planning notes</h3>
-        </div>
-      </div>
-
-      <div className="insights-grid">
-        {insights.map((insight) => (
-          <article
-            className="insight-card"
-            key={`${insight.title}-${insight.detail}`}
-          >
+    <div className="insights-list">
+      {insights.map((insight) => (
+        <article
+          className="insight-row"
+          key={`${insight.title}-${insight.detail}`}
+        >
+          <div className="insight-marker" aria-hidden="true" />
+          <div className="insight-copy">
             <strong>{insight.title}</strong>
             <p>{insight.detail}</p>
-          </article>
-        ))}
-      </div>
-    </section>
+          </div>
+        </article>
+      ))}
+    </div>
   );
 }
 

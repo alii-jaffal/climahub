@@ -206,54 +206,32 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow">ClimaHub</span>
-          <h1>Search and persist weather records from the browser.</h1>
-          <p className="lead">
-            The form below sends a location, date range, and optional notes to
-            FastAPI, then renders the stored response that came back from
-            PostgreSQL.
-          </p>
-        </div>
-        <div className="status-panel status-healthy">
-          <div className="section-header">
-            <div>
-              <span className="eyebrow">Connection</span>
-              <h2>Frontend API client</h2>
-            </div>
+      <header className="app-header">
+        <div className="app-header-copy">
+          <span className="app-label">ClimaHub</span>
+          <div>
+            <h1>Weather workspace</h1>
+            <p>Search, save, compare, and export weather records.</p>
           </div>
-          <dl className="meta-grid">
-            <div>
-              <dt>Base URL</dt>
-              <dd>{import.meta.env.VITE_API_BASE_URL}</dd>
-            </div>
-            <div>
-              <dt>Transport</dt>
-              <dd>axios + JSON</dd>
-            </div>
-            <div>
-              <dt>Workflow</dt>
-              <dd>Full browser CRUD</dd>
-            </div>
-            <div>
-              <dt>State</dt>
-              <dd>
-                {isBusy ? "Busy" : "Ready"}
-              </dd>
-            </div>
-          </dl>
-          {isBusy ? (
-            <div className="status-inline">
-              <span className="loading-indicator" aria-hidden="true" />
-              <span>Processing your latest request.</span>
-            </div>
-          ) : null}
         </div>
-      </section>
+        <div className="app-header-meta">
+          <span className="header-chip">
+            <strong>{savedRecords.length}</strong>
+            <span>saved</span>
+          </span>
+          <span className={`status-chip ${isBusy ? "status-chip-busy" : ""}`}>
+            {isBusy ? (
+              <span className="loading-indicator" aria-hidden="true" />
+            ) : (
+              <span className="status-dot" aria-hidden="true" />
+            )}
+            <span>{isBusy ? "Updating" : "Ready"}</span>
+          </span>
+        </div>
+      </header>
 
-      <section className="content-grid">
-        <div className="sidebar-stack">
+      <section className="workspace-shell">
+        <aside className="workspace-sidebar">
           <WeatherSearchForm
             loading={loading}
             error={error?.message ?? ""}
@@ -276,13 +254,13 @@ function App() {
             onUpdateRecord={handleUpdateRecord}
             onDeleteRecord={handleDeleteRecord}
           />
-        </div>
+        </aside>
 
-        <section className="surface result-surface">
-          <div className="section-header">
+        <section className="surface workspace-main">
+          <div className="workspace-main-header">
             <div>
-              <span className="eyebrow">Result</span>
-              <h2>Saved weather view</h2>
+              <span className="eyebrow">Details</span>
+              <h2>Selected weather record</h2>
             </div>
           </div>
           {showResultLoading ? (
@@ -296,12 +274,6 @@ function App() {
           ) : weatherRecord ? (
             <div className="result-stack">
               <WeatherOverview weatherRecord={weatherRecord} />
-              <details className="raw-json">
-                <summary>Raw JSON response</summary>
-                <pre className="json-preview">
-                  {JSON.stringify(weatherRecord, null, 2)}
-                </pre>
-              </details>
             </div>
           ) : emptyResultState ? (
             <div
@@ -322,8 +294,8 @@ function App() {
             <div className="state-card state-card-empty">
               <strong>No weather record selected</strong>
               <p>
-                Create or open a saved weather record to see the current
-                conditions, map, insights, and forecast here.
+                Create or open a record to view weather details, map, insights,
+                and forecast data.
               </p>
             </div>
           )}
