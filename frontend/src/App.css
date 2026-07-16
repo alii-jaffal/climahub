@@ -706,6 +706,42 @@
   color: var(--text-muted);
 }
 
+.app-footer {
+  margin-top: 4px;
+}
+
+.footer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.footer-card-centered {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 140px;
+}
+
+.footer-credit {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer-credit-centered {
+  max-width: 68ch;
+  color: var(--text-strong);
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  font-weight: 600;
+  line-height: 1.7;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

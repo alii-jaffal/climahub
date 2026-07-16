@@ -24,11 +24,19 @@ function WeatherOverview({ weatherRecord }) {
     ...DEFAULT_CURRENT_UNITS,
     ...(weatherRecord?.weather_data?.current_units ?? {}),
   };
-  const forecastDays = weatherRecord?.daily_weather?.slice(0, 5) ?? [];
+  const dailyWeather = weatherRecord?.daily_weather ?? [];
+  const forecastDays = dailyWeather.slice(0, 5);
+  const totalDailyRows = dailyWeather.length;
+  const visibleDailyRows = forecastDays.length;
   const currentWeatherCode = currentWeather?.weather_code;
   const currentTemperature = currentWeather
     ? formatValue(currentWeather.temperature_2m, currentUnits.temperature_2m)
     : "Unavailable";
+  const dailyWeatherSummary = totalDailyRows
+    ? totalDailyRows > visibleDailyRows
+      ? `Showing the first ${visibleDailyRows} of ${totalDailyRows} saved daily rows`
+      : `Showing ${visibleDailyRows} saved daily ${visibleDailyRows === 1 ? "row" : "rows"}`
+    : "No saved daily rows for this record";
 
   return (
     <section className="weather-overview">
@@ -172,8 +180,8 @@ function WeatherOverview({ weatherRecord }) {
       <section className="overview-panel">
         <div className="panel-heading">
           <div>
-            <h3>Five-day outlook</h3>
-            <p>First five saved daily rows from the selected record</p>
+            <h3>Saved daily conditions</h3>
+            <p>{dailyWeatherSummary}</p>
           </div>
         </div>
 
@@ -230,7 +238,7 @@ function WeatherOverview({ weatherRecord }) {
             </div>
           </div>
         ) : (
-          <div className="module-empty">No forecast rows were returned.</div>
+          <div className="module-empty">No daily weather rows were returned.</div>
         )}
       </section>
     </section>

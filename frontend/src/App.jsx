@@ -9,6 +9,7 @@ import {
   updateWeatherRecord,
 } from "./api/weatherRecords";
 import "./App.css";
+import AppFooter from "./components/AppFooter";
 import SavedWeatherRecords from "./components/SavedWeatherRecords";
 import WeatherSearchForm from "./components/WeatherSearchForm";
 import WeatherOverview from "./components/WeatherOverview";
@@ -306,6 +307,8 @@ function App() {
           )}
         </section>
       </section>
+
+      <AppFooter />
     </main>
   );
 }

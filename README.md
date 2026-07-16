@@ -6,7 +6,7 @@ A full-stack weather application that retrieves real weather information, valida
 **Assessment:** AI Engineer Intern Technical Assessment  
 **Completed:** Tech Assessment #1 — Frontend and Tech Assessment #2 — Backend
 
-> **Demo video:** Add the public demo video URL here before submission.
+> **Demo video:** https://www.youtube.com/watch?v=MHeHhAGv-6k
 
 ---
 
